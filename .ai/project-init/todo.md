@@ -9,73 +9,13 @@
 
 ### 1.1 Create `spacetimedb/src/schema.ts`
 
-- [ ] Create `spacetimedb/src/schema.ts` with all table definitions
-- [ ] Define `Player` table:
-  ```ts
-  table({ name: 'player', public: true }, {
-    identity: t.identity().primaryKey(),
-    name: t.string(),
-    online: t.bool(),
-    lastSeen: t.timestamp(),
-  })
-  ```
-- [ ] Define `Room` table with indexes:
-  ```ts
-  table({
-    name: 'room', public: true,
-    indexes: [
-      { accessor: 'room_status', algorithm: 'btree', columns: ['status'] },
-      { accessor: 'room_game_type', algorithm: 'btree', columns: ['gameType'] },
-    ]
-  }, {
-    id: t.u64().primaryKey().autoInc(),
-    code: t.string().unique(),
-    gameType: t.string(),       // 'tic_tac_toe'
-    status: t.string(),         // 'waiting' | 'playing' | 'finished'
-    isPublic: t.bool(),
-    isLocal: t.bool(),
-    hostIdentity: t.identity(),
-    maxPlayers: t.u32(),
-    createdAt: t.timestamp(),
-    lastActivity: t.timestamp(),
-  })
-  ```
-- [ ] Define `RoomMember` table with indexes:
-  ```ts
-  table({
-    name: 'room_member', public: true,
-    indexes: [
-      { accessor: 'room_member_room_id', algorithm: 'btree', columns: ['roomId'] },
-      { accessor: 'room_member_player', algorithm: 'btree', columns: ['playerIdentity'] },
-    ]
-  }, {
-    id: t.u64().primaryKey().autoInc(),
-    roomId: t.u64(),
-    playerIdentity: t.identity(),
-    seatIndex: t.u32(),
-    joinedAt: t.timestamp(),
-  })
-  ```
-- [ ] Define `ChatMessage` table with index:
-  ```ts
-  table({
-    name: 'chat_message', public: true,
-    indexes: [
-      { accessor: 'chat_message_room_id', algorithm: 'btree', columns: ['roomId'] },
-    ]
-  }, {
-    id: t.u64().primaryKey().autoInc(),
-    roomId: t.u64(),
-    senderIdentity: t.identity(),
-    content: t.string(),
-    sentAt: t.timestamp(),
-  })
-  ```
-- [ ] Export `schema()` with all four tables at the bottom of the file:
-  ```ts
-  const spacetimedb = schema({ player, room, roomMember, chatMessage });
-  export default spacetimedb;
-  ```
+- [x] Create `spacetimedb/src/schema.ts` with all table definitions
+- [x] Define `Player` table
+- [x] Define `Room` table with indexes (`room_status`, `room_game_type`)
+- [x] Define `RoomMember` table with indexes (`room_member_room_id`, `room_member_player`)
+- [x] Define `ChatMessage` table with index (`chat_message_room_id`)
+- [x] Export `schema()` with all four tables
+  - **Deviation**: Uses named export (`export const spacetimedb`) instead of default export
 
 ### 1.2 Rewrite `spacetimedb/src/index.ts`
 
