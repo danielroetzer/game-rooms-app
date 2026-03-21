@@ -8,9 +8,45 @@ import {
   t as __t,
   type AlgebraicTypeType as __AlgebraicTypeType,
   type Infer as __Infer,
-} from 'spacetimedb';
+} from "spacetimedb";
 
-export const Person = __t.object('Person', {
-  name: __t.string(),
+export const ChatMessage = __t.object("ChatMessage", {
+  id: __t.u64(),
+  roomId: __t.u64(),
+  senderIdentity: __t.identity(),
+  content: __t.string(),
+  sentAt: __t.timestamp(),
 });
-export type Person = __Infer<typeof Person>;
+export type ChatMessage = __Infer<typeof ChatMessage>;
+
+export const Player = __t.object("Player", {
+  identity: __t.identity(),
+  name: __t.string(),
+  online: __t.bool(),
+  lastSeen: __t.timestamp(),
+});
+export type Player = __Infer<typeof Player>;
+
+export const Room = __t.object("Room", {
+  id: __t.u64(),
+  code: __t.string(),
+  gameType: __t.string(),
+  status: __t.string(),
+  isPublic: __t.bool(),
+  isLocal: __t.bool(),
+  hostIdentity: __t.identity(),
+  maxPlayers: __t.u32(),
+  createdAt: __t.timestamp(),
+  lastActivity: __t.timestamp(),
+});
+export type Room = __Infer<typeof Room>;
+
+export const RoomMember = __t.object("RoomMember", {
+  id: __t.u64(),
+  roomId: __t.u64(),
+  playerIdentity: __t.identity(),
+  seatIndex: __t.u32(),
+  joinedAt: __t.timestamp(),
+});
+export type RoomMember = __Infer<typeof RoomMember>;
+

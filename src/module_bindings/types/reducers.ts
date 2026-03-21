@@ -3,11 +3,20 @@
 
 /* eslint-disable */
 /* tslint:disable */
-import { type Infer as __Infer } from 'spacetimedb';
+import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
-import AddReducer from '../add_reducer';
-import SayHelloReducer from '../say_hello_reducer';
+import CreateRoomReducer from "../create_room_reducer";
+import JoinRoomReducer from "../join_room_reducer";
+import LeaveRoomReducer from "../leave_room_reducer";
+import SendMessageReducer from "../send_message_reducer";
+import SetNameReducer from "../set_name_reducer";
+import ToggleRoomPublicReducer from "../toggle_room_public_reducer";
 
-export type AddParams = __Infer<typeof AddReducer>;
-export type SayHelloParams = __Infer<typeof SayHelloReducer>;
+export type CreateRoomParams = __Infer<typeof CreateRoomReducer>;
+export type JoinRoomParams = __Infer<typeof JoinRoomReducer>;
+export type LeaveRoomParams = __Infer<typeof LeaveRoomReducer>;
+export type SendMessageParams = __Infer<typeof SendMessageReducer>;
+export type SetNameParams = __Infer<typeof SetNameReducer>;
+export type ToggleRoomPublicParams = __Infer<typeof ToggleRoomPublicReducer>;
+

@@ -41,10 +41,12 @@
 
 ### 1.3 Verify Chunk 1
 
-- [ ] Publish: `spacetime publish game-rooms-app --clear-database -y --module-path spacetimedb`
-- [ ] Check logs: `spacetime logs game-rooms-app` — no errors
-- [ ] Generate bindings: `pnpm run spacetime:generate`
-- [ ] Verify `src/module_bindings/index.ts` references all new tables and reducers
+- [x] Publish: `spacetime publish game-rooms-app --clear-database -y --module-path spacetimedb`
+  - **Note**: SpacetimeDB requires `export default` for the schema from the entrypoint. Added `export { spacetimedb as default } from "./schema"` in `index.ts`.
+- [x] Check logs: `spacetime logs game-rooms-app` — all 4 tables created, no errors
+- [x] Generate bindings: `pnpm run spacetime:generate`
+  - Deleted stale old bindings (`person_table.ts`, `add_reducer.ts`, `say_hello_reducer.ts`)
+- [x] Verify `src/module_bindings/index.ts` — all 4 tables and 6 reducers present
 
 ---
 
