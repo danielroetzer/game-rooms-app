@@ -19,61 +19,25 @@
 
 ### 1.2 Rewrite `spacetimedb/src/index.ts`
 
-- [ ] Remove all existing code (person table, add/sayHello reducers)
-- [ ] Import `spacetimedb` from `./schema` (not from `spacetimedb/server`)
-- [ ] Import `{ SenderError }` from `spacetimedb/server`
-- [ ] Implement `spacetimedb.clientConnected`:
-  - Find player by `ctx.sender` using `ctx.db.player.identity.find(ctx.sender)`
-  - If exists: update with `{ ...existing, online: true, lastSeen: ctx.timestamp }`
-  - If not: insert `{ identity: ctx.sender, name: '', online: true, lastSeen: ctx.timestamp }`
-- [ ] Implement `spacetimedb.clientDisconnected`:
-  - Find player by `ctx.sender`, update `online: false`, `lastSeen: ctx.timestamp`
-- [ ] Implement `set_name` reducer:
-  - Params: `{ name: t.string() }`
-  - Find player by `ctx.sender`, throw `SenderError` if not found
-  - Validate name is non-empty and reasonable length (e.g., max 32 chars)
-  - Update player name: `ctx.db.player.identity.update({ ...existing, name })`
-- [ ] Implement helper: `generateRoomCode(ctx)`:
-  - Characters: `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (no ambiguous chars like 0/O, 1/I/L)
-  - Use `ctx.random.integerInRange(0, chars.length - 1)` to pick 6 characters
-  - Check uniqueness via `ctx.db.room.code.find(code)` — regenerate if collision
-- [ ] Implement `create_room` reducer:
-  - Params: `{ gameType: t.string(), isPublic: t.bool(), isLocal: t.bool() }`
-  - Validate `gameType` is supported (`'tic_tac_toe'`)
-  - Generate room code using helper
-  - Determine `maxPlayers` from gameType (tic_tac_toe = 2)
-  - Insert Room: `{ id: 0n, code, gameType, status: 'waiting', isPublic, isLocal, hostIdentity: ctx.sender, maxPlayers, createdAt: ctx.timestamp, lastActivity: ctx.timestamp }`
-  - Extract `roomId` from returned row: `const room = ctx.db.room.insert(...); const roomId = room.id;`
-  - Insert host as RoomMember seat 0: `{ id: 0n, roomId, playerIdentity: ctx.sender, seatIndex: 0, joinedAt: ctx.timestamp }`
-  - If `isLocal`: also insert RoomMember seat 1 with same `ctx.sender`, keep status `'waiting'` (game start happens separately or in same reducer — see Chunk 6)
-- [ ] Implement `join_room` reducer:
-  - Params: `{ roomCode: t.string() }`
-  - Find room by code: `ctx.db.room.code.find(roomCode)`
-  - Validate: room exists, status is `'waiting'`, not `isLocal`
-  - Check player not already in room (iterate `room_member_room_id.filter(roomId)`)
-  - Count current members, validate < `maxPlayers`
-  - Assign next seatIndex = current member count
-  - Insert RoomMember
-  - Update room `lastActivity`
-- [ ] Implement `leave_room` reducer:
-  - Params: `{ roomId: t.u64() }`
-  - Find room, validate exists and status is `'waiting'`
-  - Find member by iterating `room_member_room_id.filter(roomId)` for `ctx.sender`
-  - Delete the RoomMember row: `ctx.db.roomMember.id.delete(member.id)`
-  - If leaving player is host:
-    - If other members remain: transfer host to next member, update room
-    - If no members remain: delete the room
-  - Update room `lastActivity`
-- [ ] Implement `toggle_room_public` reducer:
-  - Params: `{ roomId: t.u64() }`
-  - Find room, validate `ctx.sender` is host and status is `'waiting'`
-  - Update `isPublic: !room.isPublic`
-- [ ] Implement `send_message` reducer:
-  - Params: `{ roomId: t.u64(), content: t.string() }`
-  - Validate room exists, player is a member (iterate members to check)
-  - Validate content is non-empty and reasonable length (max 500 chars)
-  - Insert ChatMessage: `{ id: 0n, roomId, senderIdentity: ctx.sender, content, sentAt: ctx.timestamp }`
-  - Update room `lastActivity`
+- [x] Remove all existing code (person table, add/sayHello reducers)
+- [x] Split into separate files by context:
+  - `player.ts` — lifecycle hooks (`onConnect`, `onDisconnect`) + `set_name` reducer
+  - `room.ts` — `generateRoomCode` helper + `create_room`, `join_room`, `leave_room`, `toggle_room_public` reducers
+  - `chat.ts` — `send_message` reducer
+  - `index.ts` — re-exports from all files
+- [x] Implement `spacetimedb.clientConnected` (upsert player, set online)
+- [x] Implement `spacetimedb.clientDisconnected` (set offline)
+- [x] Implement `set_name` reducer (validates non-empty, max 32 chars, trims)
+- [x] Implement `generateRoomCode(ctx)` helper
+  - Recursive with `ROOM_CODE_CHARS`, `ROOM_CODE_LENGTH`, `ROOM_CODE_MAX_ATTEMPTS` constants
+  - Uses `Array.from` + `join` for code generation
+  - `ctx` typed via `ReducerCtx<typeof spacetimedb.schemaType>` from `spacetimedb/server`
+- [x] Implement `create_room` reducer (validates gameType, inserts room + seat 0, seat 1 if local)
+- [x] Implement `join_room` reducer (validates room state, prevents duplicates, assigns next seat)
+- [x] Implement `leave_room` reducer (removes member, transfers host or deletes room)
+- [x] Implement `toggle_room_public` reducer (host-only, waiting state only)
+- [x] Implement `send_message` reducer (validates membership, trims, max 500 chars)
+  - **Note**: `init` lifecycle hook was removed (not needed for current implementation)
 
 ### 1.3 Verify Chunk 1
 
