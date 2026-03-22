@@ -51,6 +51,6 @@ This list indicates non goals for this project. They might be tackled at a later
 
 - TypeScript everywhere
 - Backend / DB: SpacetimeDB
-- Frontend: Svelte
+- Frontend: SvelteKit (SSR for dynamic pages, prerendering for static pages)
 - Linting: TypeScript + ESLint
 - Formatting: Prettier

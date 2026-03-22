@@ -16,6 +16,7 @@ out
 .turbo
 *.tsbuildinfo
 .astro
+.svelte-kit
 
 # --- Storybook ---
 .storybook-out
